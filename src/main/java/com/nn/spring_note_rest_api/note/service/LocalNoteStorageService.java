@@ -1,9 +1,12 @@
 package com.nn.spring_note_rest_api.note.service;
 
 import com.nn.spring_note_rest_api.note.config.NoteStorageProperties;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,6 +38,21 @@ public class LocalNoteStorageService {
         }
 
         return rootPath.relativize(filePath).toString();
+    }
+
+    public Resource getFileResource(String storedPath) throws IOException {
+        Path filePath = rootPath.resolve(storedPath).normalize().toAbsolutePath();
+        Path normalizedRootPath = rootPath.normalize().toAbsolutePath();
+
+        if (!filePath.startsWith(normalizedRootPath)) {
+            throw new SecurityException("Access denied");
+        }
+
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("File not found");
+        }
+
+        return new UrlResource(filePath.toUri());
     }
 
     private String getFileExtension(String fileName) {
