@@ -1,4 +1,4 @@
-package com.nn.spring_note_rest_api.note.config;
+package com.nn.spring_note_rest_api.language.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
