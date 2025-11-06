@@ -31,8 +31,6 @@ public class LanguageService {
             throw new ResourceAccessException("Resource not found");
         }
 
-        System.out.println("resourceAsString : " + resourceAsString);
-
         return restClient.post()
                 .uri("?language=auto&text={resourceAsString}", resourceAsString)
                 .retrieve()
