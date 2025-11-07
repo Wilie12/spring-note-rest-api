@@ -12,10 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,5 +108,27 @@ public class NoteServiceTest {
         assertThat(actualNoteMetadata.getSize()).isEqualTo(2L);
         assertThat(actualNoteMetadata.getMimeType()).isEqualTo("text/plain");
         assertThat(actualNoteMetadata.getStoredName()).isEqualTo("storedPath");
+    }
+
+    @Test
+    public void getNoteResourceShouldWork() throws IOException {
+        // given
+        NoteMetadata noteMetadata = new NoteMetadata(
+                "test.txt",
+                "storedPath",
+                "text/plain",
+                2L
+        );
+        String fileContent = "Test file content.";
+        Resource resource = new ByteArrayResource(fileContent.getBytes());
+
+        when(noteMetaDataRepository.findById(any())).thenReturn(Optional.of(noteMetadata));
+        when(localNoteStorageService.getFileResource(any())).thenReturn(resource);
+
+        // when
+        Resource actualResource = noteService.getNoteResource(1L);
+
+        // then
+        assertThat(actualResource.getContentAsString(StandardCharsets.UTF_8)).isEqualTo(fileContent);
     }
 }
