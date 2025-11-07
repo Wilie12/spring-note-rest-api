@@ -90,7 +90,7 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void getNoteMetadataShouldWork() throws IOException {
+    public void getNoteMetadataShouldWork() {
         // given
         NoteMetadata noteMetadata = new NoteMetadata(
                 "test.txt",
