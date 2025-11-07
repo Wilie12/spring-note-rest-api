@@ -2,7 +2,7 @@ package com.nn.spring_note_rest_api.note.service;
 
 import com.nn.spring_note_rest_api.note.api.response.NoteResponse;
 import com.nn.spring_note_rest_api.note.config.NoteStorageProperties;
-import com.nn.spring_note_rest_api.note.domain.NoteMetaDataRepository;
+import com.nn.spring_note_rest_api.note.repository.NoteMetaDataRepository;
 import com.nn.spring_note_rest_api.note.domain.NoteMetadata;
 import com.nn.spring_note_rest_api.note.support.NoteExceptionSupplier;
 import com.nn.spring_note_rest_api.note.support.NoteMapper;

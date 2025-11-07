@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/notes")
+@RequestMapping("api/v1/notes")
 public class NoteController {
     private final NoteService noteService;
     private final LanguageService languageService;
