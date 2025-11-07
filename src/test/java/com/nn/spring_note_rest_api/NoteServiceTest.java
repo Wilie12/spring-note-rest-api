@@ -10,14 +10,13 @@ import com.nn.spring_note_rest_api.note.support.NoteMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +37,6 @@ public class NoteServiceTest {
 
     @BeforeEach
     public void setUp() {
-        when(noteStorageProperties.allowedMimeTypes()).thenReturn(Set.of("text/plain"));
 
         noteService = new NoteService(
                 noteStorageProperties,
@@ -74,6 +72,7 @@ public class NoteServiceTest {
                 2L
         );
 
+        when(noteStorageProperties.allowedMimeTypes()).thenReturn(Set.of("text/plain"));
         when(localNoteStorageService.storeFile(any(), any())).thenReturn("storedPath");
         when(noteMetaDataRepository.save(any())).thenReturn(noteMetadata);
         when(noteMapper.toNoteResponse(any())).thenReturn(noteResponse);
@@ -85,5 +84,26 @@ public class NoteServiceTest {
         assertThat(actualNoteResponse.noteId()).isEqualTo(1L);
         assertThat(actualNoteResponse.originalName()).isEqualTo(originalName);
         assertThat(actualNoteResponse.size()).isEqualTo(2L);
+    }
+
+    @Test
+    public void getNoteMetadataShouldWork() throws IOException {
+        // given
+        NoteMetadata noteMetadata = new NoteMetadata(
+                "test.txt",
+                "storedPath",
+                "text/plain",
+                2L
+        );
+        when(noteMetaDataRepository.findById(any())).thenReturn(Optional.of(noteMetadata));
+
+        // when
+        NoteMetadata actualNoteMetadata = noteService.getNoteMetadata(1L);
+
+        // then
+        assertThat(actualNoteMetadata.getOriginalName()).isEqualTo("test.txt");
+        assertThat(actualNoteMetadata.getSize()).isEqualTo(2L);
+        assertThat(actualNoteMetadata.getMimeType()).isEqualTo("text/plain");
+        assertThat(actualNoteMetadata.getStoredName()).isEqualTo("storedPath");
     }
 }
