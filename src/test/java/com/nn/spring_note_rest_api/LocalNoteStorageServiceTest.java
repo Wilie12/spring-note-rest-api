@@ -8,10 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -49,5 +51,25 @@ public class LocalNoteStorageServiceTest {
 
         String actualContent = Files.readString(expectedFilePath);
         assertThat(actualContent).isEqualTo(fileContent);
+    }
+
+    @Test
+    public void getFileResourceShouldWork() throws IOException {
+        // given
+        String fileContent = "Test file content.";
+        String originalName = "test.txt";
+        InputStream inputStream = new ByteArrayInputStream(fileContent.getBytes());
+        String storedPath = localNoteStorageService.storeFile(inputStream, originalName);
+
+        // when
+        Resource resource = localNoteStorageService.getFileResource(storedPath);
+
+        // then
+        assertThat(resource).isNotNull();
+        assertThat(resource.exists()).isTrue();
+        assertThat(resource.isReadable()).isTrue();
+
+        String resourceAsString = resource.getContentAsString(StandardCharsets.UTF_8);
+        assertThat(resourceAsString).isEqualTo(fileContent);
     }
 }
